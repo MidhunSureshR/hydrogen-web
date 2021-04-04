@@ -58,10 +58,6 @@ export class RoomViewModel extends ViewModel {
         this._clearUnreadAfterDelay();
     }
 
-    waitFor(time) {
-        return new Promise((resolve) => setTimeout(() => resolve(), time));
-    }
-
     async loadMemberList() {
         await this._room.loadMemberList();
         this.memberListViewModel = new MemberListViewModel(this._room);
