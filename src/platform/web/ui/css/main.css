@@ -24,6 +24,7 @@ limitations under the License.
 @import url('spinner.css');
 @import url('form.css');
 @import url('status.css');
+@import url('right-sidebar.css');
 
 /* only if the body contains the whole app (e.g. we're not embedded in a page), make some changes */
 body.hydrogen {

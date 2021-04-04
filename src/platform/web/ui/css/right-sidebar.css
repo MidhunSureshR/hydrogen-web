@@ -1,0 +1,29 @@
+
+.MemberListPanel{
+    width: 250px;
+    background-color: rgba(245, 245, 245, 0.90);
+    margin: 58px 5px 5px 5px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.MemberListPanel:hover{
+    overflow-y:scroll;
+    scrollbar-width: thin;
+    
+}
+
+.MemberListPanel > .MemberListTitle{
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    width: 250px;
+    padding-top: 5px;
+}
+
+.MemberNameTile{
+   padding-left: 25px; 
+   padding-bottom: 5px;
+   display: flex;
+   font-size: 1.5rem;
+}
