@@ -15,31 +15,42 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import {TemplateView} from "../../general/TemplateView.js";
-import {TimelineList} from "./TimelineList.js";
-import {TimelineLoadingView} from "./TimelineLoadingView.js";
-import {MessageComposer} from "./MessageComposer.js";
-import {renderAvatar} from "../../common.js";
+import { TemplateView } from "../../general/TemplateView.js";
+import { TimelineList } from "./TimelineList.js";
+import { TimelineLoadingView } from "./TimelineLoadingView.js";
+import { MessageComposer } from "./MessageComposer.js";
+import { renderAvatar } from "../../common.js";
+import { MemberListView } from "./rightpanel/MemberListView.js";
 
 export class RoomView extends TemplateView {
+
+    constructor(value, renderer = undefined) {
+        super(value, renderer);
+        value.loadMemberList();
+    }
+
     render(t, vm) {
-        return t.main({className: "RoomView middle"}, [
-            t.div({className: "TimelinePanel"}, [
-                t.div({className: "RoomHeader middle-header"}, [
-                    t.a({className: "button-utility close-middle", href: vm.closeUrl, title: vm.i18n`Close room`}),
+        return t.main({ className: "RoomView middle" }, [
+            t.div({ className: "TimelinePanel" }, [
+                t.div({ className: "RoomHeader middle-header" }, [
+                    t.a({ className: "button-utility close-middle", href: vm.closeUrl, title: vm.i18n`Close room` }),
                     renderAvatar(t, vm, 32),
-                    t.div({className: "room-description"}, [
+                    t.div({ className: "room-description" }, [
                         t.h2(vm => vm.name),
                     ]),
                 ]),
-                t.div({className: "RoomView_error"}, vm => vm.error),
+                t.div({ className: "RoomView_error" }, vm => vm.error),
                 t.mapView(vm => vm.timelineViewModel, timelineViewModel => {
                     return timelineViewModel ?
                         new TimelineList(timelineViewModel) :
                         new TimelineLoadingView(vm);    // vm is just needed for i18n
                 }),
                 t.view(new MessageComposer(this.value.composerViewModel)),
-            ])
+            ]),
+            t.mapView(vm => vm.memberListViewModel, view =>
+                view ? new MemberListView(vm.memberListViewModel) : new TimelineLoadingView(vm)
+            )
         ]);
     }
+
 }

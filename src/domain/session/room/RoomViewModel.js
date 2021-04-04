@@ -15,14 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import {TimelineViewModel} from "./timeline/TimelineViewModel.js";
-import {avatarInitials, getIdentifierColorNumber} from "../../avatar.js";
-import {ViewModel} from "../../ViewModel.js";
+import { TimelineViewModel } from "./timeline/TimelineViewModel.js";
+import { avatarInitials, getIdentifierColorNumber } from "../../avatar.js";
+import { ViewModel } from "../../ViewModel.js";
+import { MemberListViewModel } from "./right/MemberListViewModel.js";
 
 export class RoomViewModel extends ViewModel {
     constructor(options) {
         super(options);
-        const {room, ownUserId} = options;
+        const { room, ownUserId } = options;
         this._room = room;
         this._ownUserId = ownUserId;
         this._timelineVM = null;
@@ -57,6 +58,16 @@ export class RoomViewModel extends ViewModel {
         this._clearUnreadAfterDelay();
     }
 
+    waitFor(time) {
+        return new Promise((resolve) => setTimeout(() => resolve(), time));
+    }
+
+    async loadMemberList() {
+        await this._room.loadMemberList();
+        this.memberListViewModel = new MemberListViewModel(this._room);
+        this.emitChange("loadMember");
+    }
+
     async _clearUnreadAfterDelay() {
         if (this._clearUnreadTimout) {
             return;
@@ -69,7 +80,7 @@ export class RoomViewModel extends ViewModel {
         } catch (err) {
             if (err.name !== "AbortError") {
                 throw err;
-            }    
+            }
         }
     }
 
@@ -143,7 +154,7 @@ export class RoomViewModel extends ViewModel {
     get avatarTitle() {
         return this.name;
     }
-    
+
     async _sendMessage(message) {
         if (message) {
             try {
@@ -152,7 +163,7 @@ export class RoomViewModel extends ViewModel {
                     message = message.substr(4).trim();
                     msgtype = "m.emote";
                 }
-                await this._room.sendEvent("m.room.message", {msgtype, body: message});
+                await this._room.sendEvent("m.room.message", { msgtype, body: message });
             } catch (err) {
                 console.error(`room.sendMessage(): ${err.message}:\n${err.stack}`);
                 this._sendError = err;
@@ -224,7 +235,7 @@ export class RoomViewModel extends ViewModel {
             const maxDimension = limit || Math.min(video.maxDimension, 800);
             const thumbnail = await video.scale(maxDimension);
             content.info.thumbnail_info = imageToInfo(thumbnail);
-            attachments["info.thumbnail_url"] = 
+            attachments["info.thumbnail_url"] =
                 this._room.createAttachment(thumbnail.blob, file.name);
             await this._room.sendEvent("m.room.message", content, attachments);
         } catch (err) {
@@ -263,7 +274,7 @@ export class RoomViewModel extends ViewModel {
             if (image.maxDimension > 600) {
                 const thumbnail = await image.scale(400);
                 content.info.thumbnail_info = imageToInfo(thumbnail);
-                attachments["info.thumbnail_url"] = 
+                attachments["info.thumbnail_url"] =
                     this._room.createAttachment(thumbnail.blob, file.name);
             }
             await this._room.sendEvent("m.room.message", content, attachments);
@@ -273,7 +284,7 @@ export class RoomViewModel extends ViewModel {
             console.error(err.stack);
         }
     }
-    
+
 
     get composerViewModel() {
         return this._composerVM;
