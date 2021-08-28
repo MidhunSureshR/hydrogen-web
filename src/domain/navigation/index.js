@@ -40,6 +40,8 @@ function allowsChild(parent, child) {
             return type === "lightbox" || type === "right-panel";
         case "right-panel":
             return type === "details"|| type === "members" || type === "member";
+        case "empty-grid-tile":
+            return type === "right-panel";
         default:
             return false;
     }
@@ -92,20 +94,40 @@ function pushRightPanelSegment(array, segment, value = true) {
     array.push(new Segment(segment, value));
 }
 
-export function addPanelIfNeeded(navigation, path) {
-    const segments = navigation.path.segments;
+export function addPanelIfNeeded(currentPath, isEmptyGridTile = false) {
+    console.log("called");
+    const segments = currentPath.segments;
+    const newSegments = [];
     const i = segments.findIndex(segment => segment.type === "right-panel");
-    let _path = path;
     if (i !== -1) {
-        _path = path.until("room");
-        _path = _path.with(segments[i]);
-        _path = _path.with(segments[i + 1]);
+        newSegments.push(new Segment("right-panel"));
+        if (!isEmptyGridTile) {
+            const segment = segments[i + 1];
+            newSegments.push(new Segment(segment?.type === "member"? "members" : "details"));
+        }
     }
-    return _path;
+    return newSegments;
 }
+
+// export function addPanelIfNeeded(navigation, path) {
+//     const segments = navigation.path.segments;
+//     const i = segments.findIndex(segment => segment.type === "right-panel");
+//     let _path = path;
+//     if (i !== -1) {
+//         _path = path.until("room");
+//         if (_path.segments.length === 0) {
+//             _path = path.until("empty-grid-tile");
+//         }
+//         const segment = segments[i + 1] ?? segments[i];
+//         segments.push(navigation.segment(segment.type === "member"? "members" : "details"));
+//         segments.slice(i).forEach(segment => { _path = _path.with(segment) });
+//     }
+//     return _path;
+// }
 
 export function parseUrlPath(urlPath, currentNavPath, defaultSessionId) {
     // substr(1) to take of initial /
+    console.log("parseUrlPath");
     const parts = urlPath.substr(1).split("/");
     const iterator = parts[Symbol.iterator]();
     const segments = [];
@@ -133,11 +155,17 @@ export function parseUrlPath(urlPath, currentNavPath, defaultSessionId) {
             }
             segments.push(new Segment("room", roomId));
             // Add right-panel segments from previous path
-            const previousSegments = currentNavPath.segments;
-            const i = previousSegments.findIndex(s => s.type === "right-panel");
-            if (i !== -1) {
-                segments.push(...previousSegments.slice(i));
-            }
+            // const previousSegments = currentNavPath.segments;
+            // const i = previousSegments.findIndex(s => s.type === "right-panel");
+            // if (i !== -1) {
+            //     console.log("here");
+            //     segments.push(...previousSegments.slice(i));
+            // }
+            // if (i === previousSegments.length - 1) {
+            //     // If right-panel segment is here alone, add details segment as well
+            //     segments.push(new Segment("details"));
+            // }
+            segments.push(...addPanelIfNeeded(currentNavPath));
         } else if (type === "last-session") {
             let sessionSegment = currentNavPath.get("session");
             if (typeof sessionSegment?.value !== "string" && defaultSessionId) {

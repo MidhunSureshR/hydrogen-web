@@ -21,13 +21,13 @@ import {LoadingView} from "../../general/LoadingView.js";
 import {MemberDetailsView} from "./MemberDetailsView.js";
 
 export class RightPanelView extends TemplateView {
-    render(t) {
-        return t.div({ className: "RightPanelView" },
+    render(t, vm) {
+        let view = vm.isEmptyRoom ? [t.h5("Select a room on the left")] :
             [
                 t.ifView(vm => vm.activeViewModel, vm => new ButtonsView(vm)),
                 t.mapView(vm => vm.activeViewModel, vm => this._viewFromType(vm))
-            ]
-        );
+            ];
+        return t.div({ className: "RightPanelView" }, view);
     }
 
     _viewFromType(vm) {

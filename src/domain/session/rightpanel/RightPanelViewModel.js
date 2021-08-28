@@ -29,6 +29,8 @@ export class RightPanelViewModel extends ViewModel {
 
     get activeViewModel() { return this._activeViewModel; }
 
+    get isEmptyRoom() { return !this._room; }
+
     async _getMemberListArguments() {
         if (!this._members) {
             this._members = await this._room.loadMemberList();

@@ -76,6 +76,7 @@ export class LazyListView extends ListView {
         this._itemHeight = itemHeight;
         this._overflowMargin = overflowMargin;
         this._overflowItems = overflowItems;
+        console.trace();
     }
 
     _getVisibleRange() {
@@ -115,7 +116,11 @@ export class LazyListView extends ListView {
         await new Promise(r => requestAnimationFrame(r));
 
         this._height = this._parent.clientHeight;
-        if (this._height === 0) { console.error("LazyListView could not calculate parent height."); }
+        if (this._height === 0) {
+            console.error("LazyListView could not calculate parent height.");
+            // console.trace();
+        }
+        console.log("height = ", this._height);
         const range = this._getVisibleRange();
         const renderRange = range.expand(this._overflowItems);
         this._renderRange = renderRange;

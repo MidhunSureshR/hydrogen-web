@@ -82,7 +82,9 @@ export class RoomGridViewModel extends ViewModel {
     _switchToRoom(roomId) {
         let path = this.navigation.path.until("rooms");
         path = path.with(this.navigation.segment("room", roomId));
-        path = addPanelIfNeeded(this.navigation, path);
+        // path = addPanelIfNeeded(this.navigation, path);
+        path = this.navigation.pathFrom([...path.segments, ...addPanelIfNeeded(this.navigation.path)]);
+        console.log("path", path);
         this.navigation.applyPath(path);
     }
 
@@ -94,7 +96,12 @@ export class RoomGridViewModel extends ViewModel {
         if (vmo) {
             this._switchToRoom(vmo.id);
         } else {
-            this.navigation.push("empty-grid-tile", index);
+            let path = this.navigation.path.until("rooms");
+            path = path.with(this.navigation.segment("empty-grid-tile", index));
+            // path = path.with(this.navigation.segment("right-panel"));
+            path = this.navigation.pathFrom([...path.segments, ...addPanelIfNeeded(this.navigation.path, true)]);
+            this.navigation.applyPath(path);
+            // this.navigation.push("empty-grid-tile", index);
         }
     }
 

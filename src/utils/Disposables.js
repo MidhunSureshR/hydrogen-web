@@ -37,6 +37,7 @@ export class Disposables {
         }
         if (this.isDisposed) {
             console.warn("Disposables already disposed, disposing new value");
+            console.trace();
             disposeValue(disposable);
             return disposable;
         }

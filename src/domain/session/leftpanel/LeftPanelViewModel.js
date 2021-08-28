@@ -99,13 +99,15 @@ export class LeftPanelViewModel extends ViewModel {
         if (this.gridEnabled) {
             if (room) {
                 path = path.with(room);
-                path = addPanelIfNeeded(this.navigation, path);
+                // path = addPanelIfNeeded(this.navigation, path);
+                path = this.navigation.pathFrom([...path.segments, ...addPanelIfNeeded(this.navigation.path)]);
             }
         } else {
             if (room) {
                 path = path.with(this.navigation.segment("rooms", [room.value]));
                 path = path.with(room);
-                path = addPanelIfNeeded(this.navigation, path);
+                // path = addPanelIfNeeded(this.navigation, path);
+                path = this.navigation.pathFrom([...path.segments, ...addPanelIfNeeded(this.navigation.path)]);
             } else {
                 path = path.with(this.navigation.segment("rooms", []));
                 path = path.with(this.navigation.segment("empty-grid-tile", 0));
